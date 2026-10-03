@@ -1,0 +1,4 @@
+Texto normal: https://fonts.google.com/specimen/Montserrat
+Texto quote: https://fonts.google.com/specimen/Edu+QLD+Hand?preview.script=Latn
+Botões (que linkan pra cada personagem): https://fonts.google.com/specimen/Lilita+One?preview.script=Latn
+Titulos/H1 e H2: https://fonts.google.com/specimen/McLaren?preview.script=Latn
