@@ -93,11 +93,25 @@ const { members } = useCast()
   gap: clamp(1rem, 4vh, 2.5rem);
 
   padding-block: clamp(2rem, 8vh, 5rem);
-  padding-inline: var(--space);
+  padding-inline: var(--folga-lateral);
 
-  /* Quanto cada personagem sobe em relação à anterior. Um lugar só, porque a
-     diagonal e a compensação embaixo precisam do mesmo número. */
-  --passo-da-escada: 1.2rem;
+  /*
+   * A folga lateral é o espaço que sobra fora do elenco, e ela tem dois papéis ao
+   * mesmo tempo: afastar os desenhos da borda e definir o quanto cada um pode
+   * transbordar a própria célula. Como o teto do tamanho sai dela, aumentar a
+   * folga aumenta os desenhos — até o ponto em que a sobreposição começa a
+   * encobrir o vizinho. É por volta daqui.
+   */
+  --folga-lateral: clamp(1rem, 6vw, 5rem);
+
+  /*
+   * Quanto cada personagem sobe em relação à anterior.
+   *
+   * Cresce com a janela para o ângulo da diagonal ficar parecido em tela grande e
+   * pequena: um passo fixo em pixels pareceria íngreme no celular e quase reto num
+   * monitor largo.
+   */
+  --passo-da-escada: clamp(1.4rem, 2.6vw, 3rem);
 }
 
 .capa__elenco {
@@ -163,16 +177,17 @@ const { members } = useCast()
 }
 
 /**
- * O desenho é maior que a célula, de propósito: é assim que as personagens se
- * encostam. Nada fica cortado, porque a arte é PNG de fundo transparente e
+ * O desenho é bem maior que a célula, de propósito: é assim que as personagens
+ * se encostam. Nada fica cortado, porque a arte é PNG de fundo transparente e
  * nenhum elemento recorta a lista.
  *
- * O teto do `min()` é o que impede a barra de rolagem horizontal: a margem que
- * existe fora do container vale exatamente `--space`, então o desenho pode
- * transbordar a célula até `célula + 2 * --space` e nada além.
+ * O teto do `min()` é o que impede a barra de rolagem horizontal. Com quatro
+ * desenhos enfileirados, a largura total ocupada é `3 * célula + desenho`, e isso
+ * não pode passar da largura da janela. Daí o teto ser `célula + 2 * folga`: a
+ * folga lateral é exatamente o espaço livre nas pontas.
  */
 .capa__arte {
-  width: min(132%, calc(100% + 2 * var(--space)));
+  width: min(150%, calc(100% + 2 * var(--folga-lateral)));
 
   /*
    * O crescimento no hover acontece por `transform`, e não mudando a largura.

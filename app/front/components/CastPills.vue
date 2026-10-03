@@ -31,10 +31,15 @@ const { members, isActive, routeFor } = useCast()
 
 <style scoped>
 /*
- * Alinhadas à esquerda, junto do título da página.
+ * Alinhadas ao centro, porque é para lá que elas se juntam.
  *
- * Centradas elas ficavam soltas no meio, sem relação com o texto acima — e aqui
- * elas são um filtro, parte do conteúdo, não um enfeite de capa.
+ * A distância entre uma e outra é o que muda com a rolagem: perto da capa, os
+ * nomes deixam seus lugares embaixo de cada personagem e aparecem aqui
+ * espalhados, na mesma ordem e nas mesmas colunas. Conforme o leitor desce, eles
+ * convergem para o meio e viram os botões.
+ *
+ * O espalhamento é o inverso da `--mistura`: cheio é junto, solto é separado.
+ * Quem publica a mistura é a barra de filtros.
  */
 .pilulas {
   list-style: none;
@@ -43,6 +48,21 @@ const { members, isActive, routeFor } = useCast()
 
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
+  justify-content: center;
+
+  --espalhamento: max(0, min(1, calc(1 - var(--mistura, 1))));
+  gap: calc(0.75rem + var(--espalhamento) * 8vw);
+  transition: gap 0.12s linear;
+}
+
+/*
+ * Em tela estreita o espalhamento não faz sentido: as quatro pílulas já não
+ * cabem numa linha, e abrir espaço entre elas só empurraria a última para baixo
+ * antes da hora.
+ */
+@media (max-width: 620px) {
+  .pilulas {
+    gap: 0.6rem;
+  }
 }
 </style>

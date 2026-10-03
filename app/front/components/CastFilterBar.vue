@@ -38,9 +38,15 @@ const escondida = computed(() => props.progresso < 0.5)
     :style="{ '--progresso': progresso }"
     :inert="escondida || undefined"
   >
-    <div class="container">
-      <CastPills />
-    </div>
+    <!--
+      Sem container.
+
+      A barra ocupa a largura toda porque as pílulas são os nomes da capa, e na
+      capa eles estão espalhados pela tela inteira. Presas numa caixa de 780px,
+      elas não teriam para onde se afastar e a linha quebraria em duas — foi o que
+      aconteceu na primeira tentativa.
+    -->
+    <CastPills />
   </div>
 </template>
 
@@ -51,16 +57,26 @@ const escondida = computed(() => props.progresso < 0.5)
   z-index: 5;
 
   /*
-   * Fundo translúcido com desfoque, igual ao cabeçalho antigo.
-   *
-   * Sem ele, as pílulas ficariam flutuando sobre o texto dos posts quando
-   * grudadas no alto, e nenhuma cor de pílula resolve isso.
+   * Sem fundo, sem borda e sem desfoque: as pílulas ficam soltas sobre o
+   * conteúdo, que era o pedido. O que as separa do texto atrás é a própria
+   * sombra de cada pílula.
    */
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(10px);
+  padding-block: 0.75rem;
+  padding-inline: var(--space);
 
-  padding-block: 0.6rem;
-  border-bottom: 1px solid transparent;
+  /*
+   * A curva da transformação, calculada UMA vez.
+   *
+   * 0 é "solto", 1 é "cheio", e ela sai da proporção da capa que já subiu:
+   * enquanto a capa está à vista (até metade) não há preenchimento nenhum, e ele
+   * entra conforme o leitor desce para os posts.
+   *
+   * Fica aqui, e não em cada peça, porque duas coisas dependem dela ao mesmo
+   * tempo: o preenchimento de cada pílula e o quanto a linha delas está espalhada.
+   * Calculada em dois lugares, bastaria uma mudança de fórmula para elas
+   * discordarem sem que ninguém percebesse.
+   */
+  --mistura: max(0, min(1, calc((var(--progresso) - 0.5) * 2)));
 
   opacity: var(--progresso);
 
@@ -73,14 +89,5 @@ const escondida = computed(() => props.progresso < 0.5)
    * aparecer como piscada.
    */
   transition: opacity 0.12s linear;
-}
-
-/**
- * Quando está visível, ganha a linha de baixo que separa a barra do conteúdo.
- * Enquanto está invisível, a borda também some, senão ficaria um risco solto
- * cortando o meio da capa.
- */
-.barra:not([inert]) {
-  border-bottom-color: var(--border);
 }
 </style>

@@ -22,17 +22,8 @@ withDefaults(
     colorTo: string
     /** Marca a pílula como a que representa a página atual. */
     active?: boolean
-    /**
-     * Cor do texto por cima do gradiente.
-     *
-     * É branco por padrão, e aqui cor fixa se justifica: as cores do gradiente
-     * não mudam entre os temas (medido no mockup), então a tinta por cima delas
-     * também não precisa mudar. Fosse o fundo sensível ao tema, isto teria que
-     * ser um token.
-     */
-    ink?: string
   }>(),
-  { active: false, ink: '#ffffff' },
+  { active: false },
 )
 </script>
 
@@ -40,7 +31,7 @@ withDefaults(
   <NuxtLink
     class="pilula"
     :to="to"
-    :style="{ '--pilula-de': colorFrom, '--pilula-ate': colorTo, '--pilula-tinta': ink }"
+    :style="{ '--pilula-de': colorFrom, '--pilula-ate': colorTo }"
     :aria-current="active ? 'page' : undefined"
   >
     <slot />
@@ -48,7 +39,31 @@ withDefaults(
 </template>
 
 <style scoped>
+/**
+ * ===========================================================================
+ * DUAS APARÊNCIAS, UMA PÍLULA
+ * ===========================================================================
+ * A mesma pílula é um botão cheio quando está na área dos posts e vira só o nome
+ * em gradiente quando o leitor sobe de volta para a capa. Quem interpola as duas
+ * é `--progresso`, publicado pela barra de filtros a partir da rolagem.
+ *
+ * A montagem é esta:
+ *
+ *   - o TEXTO é o gradiente recortado nas letras, com um branco por cima;
+ *   - o PREENCHIMENTO é um `::before` atrás do texto, com o mesmo gradiente;
+ *   - `--mistura` vai de 1 (cheia, longe da capa) a 0 (solta, perto dela).
+ *
+ * Cheia: preenchimento opaco, branco por cima das letras. Solta: preenchimento
+ * invisível, branco em zero, e o gradiente das letras fica à mostra — que é a
+ * mesma aparência dos nomes embaixo de cada personagem, para a passagem da capa
+ * para os posts parecer contínua, e não uma troca de elemento.
+ *
+ * O padrão de `--progresso` é 1, ou seja, cheia: fora da home não existe capa, e
+ * a pílula está sempre na área dos posts.
+ */
 .pilula {
+  position: relative;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -56,8 +71,24 @@ withDefaults(
   padding: 0.5rem 1.6rem;
   border-radius: var(--radius-round);
 
+  /*
+   * `--mistura` vem de fora: quem calcula é a barra de filtros, a partir da
+   * rolagem. 0 é "solto", 1 é "cheio".
+   *
+   * O padrão existe para quando a pílula aparece fora da home — lá não há capa,
+   * então ela está sempre na área dos posts, e portanto cheia.
+   *
+   * `--forca` é a mesma coisa ao quadrado, e existe por um motivo visual: como o
+   * preenchimento e o texto são o MESMO gradiente, no meio do caminho o texto
+   * branco fica semitransparente sobre um fundo semitransparente da mesma cor —
+   * e o resultado fica lavado, quase ilegível. Ao quadrado, o fundo cheio só
+   * aparece perto do fim, e o miolo incômodo fica curto.
+   */
+  --forca: calc(var(--mistura, 1) * var(--mistura, 1));
+
   background-image: linear-gradient(90deg, var(--pilula-de), var(--pilula-ate));
-  color: var(--pilula-tinta);
+  background-clip: text;
+  color: color-mix(in srgb, #ffffff calc(var(--forca) * 100%), transparent);
 
   font-family: var(--font-cast);
   font-size: clamp(1.05rem, 3.4vw, 1.3rem);
@@ -66,15 +97,35 @@ withDefaults(
   text-decoration: none;
   text-align: center;
 
-  box-shadow: var(--shadow-sm);
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.2s ease;
+  /*
+   * `drop-shadow` no lugar de `box-shadow`: ele segue a forma do que foi pintado.
+   * Com a pílula cheia é a sombra da pílula; solta, é a sombra das letras — que é
+   * o contorno de que o gradiente precisa sobre o fundo da página.
+   */
+  filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--ink) 45%, transparent));
+
+  transition: transform 0.15s ease;
 }
 
-.pilula:hover {
+/*
+ * O preenchimento. Sem `z-index`: o `::before` já é pintado depois do fundo do
+ * elemento e antes do texto.
+ */
+.pilula::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+
+  border-radius: inherit;
+  background-image: linear-gradient(90deg, var(--pilula-de), var(--pilula-ate));
+  opacity: var(--forca);
+}
+
+.pilula:hover,
+.pilula:focus-visible {
+  --mistura: 1;
+  --forca: 1;
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
 }
 
 /**
