@@ -100,7 +100,19 @@
    */
   --folga-capa: clamp(1rem, 6vw, 5rem);
   --passo-escada: clamp(1.4rem, 2.6vw, 3rem);
-  --altura-linha-nomes: 4.5rem;
+
+  /*
+   * A altura da faixa dos nomes, logo abaixo das personagens.
+   *
+   * Não é chute: é a altura REAL da barra de filtros, que é quem desenha os
+   * nomes. Ela vale `padding-block` (0,75rem duas vezes) mais a pílula no seu
+   * tamanho maior — a fonte de nome (até 1,3rem) com o acréscimo do estado
+   * solto (0,7rem), vezes a altura de linha, mais o `padding` da pílula.
+   *
+   * Errar para menos faz os nomes serem cortados na borda de baixo da tela, que
+   * foi o que aconteceu com 4,5rem: medidos, eles pediam 78px, e não 72px.
+   */
+  --altura-linha-nomes: 5rem;
 
   /*
    * A altura da faixa do topo, onde vive o círculo do tema.
