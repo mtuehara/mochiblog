@@ -9,10 +9,27 @@ const { siteName, siteTagline } = useRuntimeConfig().public
     <header class="site__header">
       <div class="container">
         <div class="site__header-inner">
-          <NuxtLink to="/" class="brand">
-            <span class="brand__name">{{ siteName }}</span>
-            <span class="brand__tagline">{{ siteTagline }}</span>
-          </NuxtLink>
+          <!--
+            O círculo do tema vem ANTES da marca, no canto superior esquerdo,
+            como no mockup.
+
+            Ele vive dentro do cabeçalho fixo, e não solto sobre a página, por
+            um motivo prático: trocar de tema é algo que se quer poder fazer em
+            qualquer ponto da leitura, e solto ele sairia da tela no primeiro
+            rolar.
+
+            O grupo à esquerda existe porque o cabeçalho usa `space-between`.
+            Com três filhos soltos, a marca seria empurrada para o meio. Num
+            grupo, ela fica ao lado do botão e o menu continua na ponta direita.
+          -->
+          <div class="site__header-left">
+            <UiThemeToggle />
+
+            <NuxtLink to="/" class="brand">
+              <span class="brand__name">{{ siteName }}</span>
+              <span class="brand__tagline">{{ siteTagline }}</span>
+            </NuxtLink>
+          </div>
 
           <nav class="site__nav" aria-label="Navegação principal">
             <NuxtLink to="/">Início</NuxtLink>

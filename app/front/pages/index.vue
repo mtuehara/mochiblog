@@ -61,39 +61,48 @@ useSeoMeta({
 
 <template>
   <div>
-    <header class="page-head">
-      <h1>Últimos posts</h1>
-      <p class="page-head__lead">{{ siteDescription }}</p>
-    </header>
+    <!-- A capa: elenco, apresentação e os dois botões, tudo dentro dela. -->
+    <HomeCover />
 
-    <ul v-if="posts.length" class="post-list">
-      <PostCard v-for="post in posts" :key="post.id" :post="post" />
-    </ul>
+    <!--
+      `id="posts"` é o destino da âncora do botão "Mistos/Todos" da capa.
 
-    <p v-else class="empty-state">
-      Nenhum post publicado ainda. Volte em breve.
-    </p>
+      O título da lista é um `<h2>`, e não um `<h1>`, porque o `<h1>` da página
+      fica na capa. Duas manchetes de nível 1 na mesma página não são erro, mas
+      dizem ao buscador que existem dois assuntos principais onde só existe um.
+    -->
+    <section id="posts">
+      <header class="page-head">
+        <h2>Últimos posts</h2>
+      </header>
 
-    <nav v-if="totalPages > 1" class="pagination" aria-label="Paginação">
-      <NuxtLink
-        v-if="currentPage > 1"
-        :to="{ query: currentPage > 2 ? { page: currentPage - 1 } : {} }"
-        rel="prev"
-      >
-        ← Mais recentes
-      </NuxtLink>
-      <span v-else />
+      <ul v-if="posts.length" class="post-list">
+        <PostCard v-for="post in posts" :key="post.id" :post="post" />
+      </ul>
 
-      <span class="pagination__status">Página {{ currentPage }} de {{ totalPages }}</span>
+      <p v-else class="empty-state">Nenhum post publicado ainda. Volte em breve.</p>
 
-      <NuxtLink
-        v-if="currentPage < totalPages"
-        :to="{ query: { page: currentPage + 1 } }"
-        rel="next"
-      >
-        Mais antigos →
-      </NuxtLink>
-      <span v-else />
-    </nav>
+      <nav v-if="totalPages > 1" class="pagination" aria-label="Paginação">
+        <NuxtLink
+          v-if="currentPage > 1"
+          :to="{ query: currentPage > 2 ? { page: currentPage - 1 } : {} }"
+          rel="prev"
+        >
+          ← Mais recentes
+        </NuxtLink>
+        <span v-else />
+
+        <span class="pagination__status">Página {{ currentPage }} de {{ totalPages }}</span>
+
+        <NuxtLink
+          v-if="currentPage < totalPages"
+          :to="{ query: { page: currentPage + 1 } }"
+          rel="next"
+        >
+          Mais antigos →
+        </NuxtLink>
+        <span v-else />
+      </nav>
+    </section>
   </div>
 </template>

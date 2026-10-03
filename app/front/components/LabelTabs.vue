@@ -39,24 +39,12 @@ const currentLabel = computed<string | null>(() => {
 })
 
 /**
- * Compara ignorando caixa e acento, para `/tag/purple` e `/tag/Purple`
- * acenderem a mesma aba.
+ * A comparação de rótulos mora em `utils/label.ts`.
  *
- * O BFF usa exatamente a mesma regra para filtrar. Aqui a divergência seria
- * apenas cosmética (uma aba sem destaque), então duplicar três linhas é mais
- * barato do que fazer o front importar código de execução do pacote
- * compartilhado, o que arrastaria o Zod junto para o bundle do navegador.
+ * Ela nasceu aqui dentro e passou a ser usada também pelo elenco das
+ * personagens. Duas cópias da mesma regra no mesmo aplicativo era uma a mais do
+ * que o aceitável, então virou uma função compartilhada.
  */
-function sameLabel(a: string, b: string): boolean {
-  const normalize = (value: string) =>
-    value
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .trim()
-
-  return normalize(a) === normalize(b)
-}
 
 const isAllActive = computed(() => route.path === '/')
 

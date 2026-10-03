@@ -47,6 +47,18 @@ importers:
 
   app/front:
     dependencies:
+      '@fontsource/edu-qld-hand':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/lilita-one':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/mclaren':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/montserrat':
+        specifier: ^5.3.0
+        version: 5.3.0
       nuxt:
         specifier: ^3.15.0
         version: 3.21.11(@oxc-project/types@0.143.0)(@types/node@22.20.4)(@vue/compiler-sfc@3.5.43)(cac@6.7.14)(db0@0.3.4)(esbuild@0.28.2)(ioredis@5.11.1(supports-color@10.2.2))(magicast@0.5.5)(rollup-plugin-visualizer@7.1.1(rollup@4.63.6))(rollup@4.63.6)(srvx@0.11.22)(supports-color@10.2.2)(terser@5.51.2)(tsx@4.23.15)(typescript@5.9.3)(vite@7.3.6(@types/node@22.20.4)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))(vue-tsc@2.2.12(typescript@5.9.3))(yaml@2.9.1)
@@ -401,6 +413,18 @@ packages:
 
   '@fastify/rate-limit@10.3.0':
     resolution: {integrity: sha512-eIGkG9XKQs0nyynatApA3EVrojHOuq4l6fhB4eeCk4PIOeadvOJz9/4w3vGI44Go17uaXOWEcPkaD8kuKm7g6Q==}
+
+  '@fontsource/edu-qld-hand@5.3.0':
+    resolution: {integrity: sha512-12QW6qv9cR5uwe1OjsMBTttKcBNmHh2p1pE33AC/lH6YN1wkHBhbj5jgj9jgOM40HZdK/lVcGIc8Uzxd/vmnYw==}
+
+  '@fontsource/lilita-one@5.3.0':
+    resolution: {integrity: sha512-bNW3tD+m5pOsAQpW/NvtRbFthFe+B73hDJK2DLLCFCtF+1p+UMBgo7ibxdcb9Sftr06LKAVbt080wiMdSqGbOg==}
+
+  '@fontsource/mclaren@5.3.0':
+    resolution: {integrity: sha512-UckMm6hQ9lHiAdlmmriscxAThlx3z2QGpepnEmc6jf7HQpoQDcbtjH1ptDN/DBCmP74QjjYKKBb0DW7Jcddc9g==}
+
+  '@fontsource/montserrat@5.3.0':
+    resolution: {integrity: sha512-iQPDtZOnmM5ih4JBGaMSXisRap0ixb9bAUw2hDtY7EjVfaqiiNlKtVuJl9XclxUwtwMMHNcWXfQR6zI9x05+Tg==}
 
   '@ioredis/commands@1.10.0':
     resolution: {integrity: sha512-UmeW7z4LfctwoQ5wkhVzgq8tXkreED2xZGpX+Bg+zA+WJFZCT6c062AfCK/Dfk81xZnnwdhJCUMkitihRaoC2Q==}
@@ -3966,6 +3990,14 @@ snapshots:
       '@lukeed/ms': 2.0.2
       fastify-plugin: 5.1.0
       toad-cache: 3.7.4
+
+  '@fontsource/edu-qld-hand@5.3.0': {}
+
+  '@fontsource/lilita-one@5.3.0': {}
+
+  '@fontsource/mclaren@5.3.0': {}
+
+  '@fontsource/montserrat@5.3.0': {}
 
   '@ioredis/commands@1.10.0': {}
 

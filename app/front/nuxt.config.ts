@@ -12,12 +12,69 @@
  */
 const bffUrl = (process.env.BFF_URL ?? 'http://localhost:3001').replace(/\/+$/, '')
 
+/**
+ * Onde a escolha de tema do leitor fica guardada no navegador.
+ *
+ * Esta constante existe em UM lugar só, e é usada por dois consumidores que não
+ * podem divergir: o script abaixo, que lê o valor antes da página pintar, e o
+ * `useTheme`, que grava o valor quando alguém clica no botão. Se os dois
+ * usassem literais diferentes, o botão funcionaria e a escolha seria esquecida
+ * a cada recarga — o tipo de bug que passa desapercebido por semanas.
+ */
+const CHAVE_DO_TEMA = 'mochiblog:tema'
+
+/**
+ * Decide o tema ANTES do primeiro quadro, e por isso é um script inline.
+ *
+ * O problema que ele resolve: a escolha do leitor mora no `localStorage`, que
+ * não existe no servidor. Se a decisão ficasse para depois da hidratação, a
+ * página apareceria clara e só então mudaria para escura — o piscar branco que
+ * todo site com tema escuro tem. Aqui o atributo já está no <html> quando o
+ * navegador pinta pela primeira vez.
+ *
+ * Sem escolha salva, seguimos o sistema operacional. O `try/catch` não é
+ * enfeite: `localStorage` lança exceção em navegação privada em alguns
+ * navegadores, e um site que não abre é bem pior que um site que abre claro.
+ */
+const TEMA_INLINE_SCRIPT = `
+(() => {
+  let tema = 'light'
+  try {
+    const salvo = localStorage.getItem('${CHAVE_DO_TEMA}')
+    if (salvo === 'light' || salvo === 'dark') tema = salvo
+    else if (window.matchMedia('(prefers-color-scheme: dark)').matches) tema = 'dark'
+  } catch {
+    /* sem acesso ao armazenamento: segue no claro */
+  }
+  document.documentElement.dataset.theme = tema
+})()
+`
+
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
 
   devtools: { enabled: true },
 
-  css: ['~/assets/css/main.css'],
+  /**
+   * As quatro fontes vêm empacotadas junto com o site, não de um CDN.
+   *
+   * Cada arquivo traz o `@font-face` com `unicode-range`, então o navegador
+   * baixa apenas os subconjuntos que a página realmente usa — em PT-BR isso quer
+   * dizer basicamente o latino, mesmo que o pacote traga cirílico e grego.
+   *
+   * A ordem importa: as fontes primeiro, e o `main.css` por último, para que ele
+   * possa sobrescrever qualquer coisa que precise.
+   */
+  css: [
+    '@fontsource/montserrat/400.css',
+    '@fontsource/montserrat/500.css',
+    '@fontsource/montserrat/600.css',
+    '@fontsource/montserrat/700.css',
+    '@fontsource/mclaren/400.css',
+    '@fontsource/lilita-one/400.css',
+    '@fontsource/edu-qld-hand/400.css',
+    '~/assets/css/main.css',
+  ],
 
   /**
    * `runtimeConfig.public` é a forma correta de expor configuração para o
@@ -28,11 +85,24 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       siteName: 'Mochi Blog',
-      siteTagline: 'Culinária, gatos e coisas do dia a dia',
+
+      /**
+       * O texto mudou junto com o conceito do site. Ele deixou de ser um blog
+       * de receitas e passou a ser o blog dos alters, como diz o mockup: um
+       * canto íntimo onde as personalidades trocam textos.
+       *
+       * Estes dois campos aparecem na aba do navegador, no cartão de preview
+       * quando alguém compartilha o link, e no alto da página.
+       */
+      siteTagline: 'Um canto íntimo',
       siteDescription:
-        'Um blog sobre receitas, vida em casa e as pequenas coisas. Escrito e mantido por mim.',
+        'Um canto íntimo onde partes e personalidades da minha mente trocam textos, desabafos e, às vezes, desenhos.',
+
       siteUrl: 'http://localhost:3000',
       authorName: 'Mochi',
+
+      /** Ver o comentário de `CHAVE_DO_TEMA`, no alto deste arquivo. */
+      temaChave: CHAVE_DO_TEMA,
     },
   },
 
@@ -99,9 +169,30 @@ export default defineNuxtConfig({
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'theme-color', content: '#e2738d' },
+
+        /**
+         * `theme-color` pinta a barra do navegador no celular. São duas tags
+         * com `media`, uma por modo.
+         *
+         * Limitação conhecida: elas respondem à preferência do SISTEMA, não ao
+         * botão do site. Quem estiver no sistema claro e escolher o tema escuro
+         * aqui vai ver a barra na cor clara. O contorno seria reescrever a tag
+         * pelo JavaScript, e não vale a complexidade por um detalhe que só
+         * aparece no celular.
+         */
+        {
+          name: 'theme-color',
+          content: '#cdfbfe',
+          media: '(prefers-color-scheme: light)',
+        },
+        {
+          name: 'theme-color',
+          content: '#94367b',
+          media: '(prefers-color-scheme: dark)',
+        },
       ],
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+      script: [{ innerHTML: TEMA_INLINE_SCRIPT }],
     },
   },
 

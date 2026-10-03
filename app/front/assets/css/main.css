@@ -6,18 +6,76 @@
    ========================================================================== */
 
 :root {
-  /* Paleta clara: papel levemente quente, nada de branco puro. Branco puro
-     cansa a vista em texto longo, e um blog é feito de texto longo. */
-  --bg: #fdf8f4;
-  --bg-soft: #f7efe8;
-  --surface: #ffffff;
-  --text: #2c2724;
-  --text-muted: #7c7069;
-  --border: #ece0d7;
+  color-scheme: light;
 
-  --accent: #d2577a;
-  --accent-strong: #b23e60;
-  --accent-soft: #fbe8ee;
+  /*
+   * Todos os valores abaixo foram MEDIDOS no mockup (docs/light.png e
+   * docs/dark.png), amostrando pixel a pixel. Não é estimativa de olho: as
+   * pílulas de cada personagem são gradientes, e olho não acerta as duas pontas.
+   */
+
+  /* Fundo: gradiente vertical, do ciano claríssimo ao verde menta. */
+  --bg-grad-from: #cdfbfe;
+  --bg-grad-to: #beffd4;
+
+  /*
+   * O gradiente não serve em todo lugar. O cabeçalho fixo precisa de uma cor
+   * chapada para poder virar translúcida com `color-mix`, e gradiente não entra
+   * nessa conta.
+   */
+  --bg: #cdfbfe;
+
+  /*
+   * Superfície de apoio (hover de aba, fundo atrás de imagem que ainda carrega).
+   * Não pode ser o meio do gradiente: lá ele fica praticamente igual ao fundo, e
+   * um hover invisível é pior que hover nenhum.
+   */
+  --bg-soft: #e6fdf4;
+
+  /* O painel de leitura. Medido igual no alto e no pé do bloco: cor sólida. */
+  --surface: #d9f4cd;
+
+  /*
+   * Tinta quase preta, não preta. O mockup mede #000000, mas texto preto puro
+   * em fundo claro cansa a vista em leitura longa, e um blog é feito de leitura
+   * longa. Este tom guarda o mesmo contraste sem o serrilhado do preto puro.
+   */
+  --ink: #12252a;
+  --ink-muted: #3f6066;
+  --text: var(--ink);
+  --text-muted: var(--ink-muted);
+  --border: #a8dcc6;
+
+  /*
+   * A cor dos LINKS é uma pergunta diferente da cor dos BOTÕES.
+   *
+   * O ciano do mockup funciona como fundo, com texto escuro em cima. Como cor
+   * de texto sobre o fundo menta ele desaparece. Então link e botão são dois
+   * tokens: um para ler, outro para preencher.
+   */
+  --link: #0b6b74;
+  --link-hover: #8f3b7b;
+
+  /*
+   * O ciano dos botões grandes, e o par dele.
+   *
+   * `--accent-ink` é o texto que fica EM CIMA do accent. Ele existe porque o
+   * mesmo botão é ciano no claro e magenta no escuro, e magenta pede texto
+   * branco. Sem este token, cada componente teria que perguntar em que tema
+   * está para escolher a cor do próprio texto — que foi exatamente o truque
+   * que existia aqui antes, espalhado em três regras.
+   */
+  --accent: #5ce1e6;
+  --accent-strong: #35c9d1;
+  --accent-ink: #0d3438;
+  --accent-soft: #d9f9fa;
+
+  /*
+   * O círculo do tema. Ele inverte entre os modos: é a única peça do site que
+   * existe para dizer "toque aqui e o mundo muda de cor".
+   */
+  --brand: #8f3b7b;
+  --brand-ink: #ffffff;
 
   /* Erro. Existe como token porque o painel é a primeira tela que precisa
      dizer "não deu certo", e vai haver mais. */
@@ -26,35 +84,69 @@
 
   --radius: 14px;
   --radius-lg: 22px;
-  --shadow-sm: 0 1px 2px rgb(44 39 36 / 6%);
-  --shadow-md: 0 10px 30px -18px rgb(44 39 36 / 32%);
+  --radius-round: 999px;
+  --shadow-sm: 0 1px 2px rgb(18 37 42 / 8%);
+  --shadow-md: 0 10px 30px -18px rgb(18 37 42 / 35%);
 
   --container: 780px;
   --space: clamp(1rem, 2.5vw, 1.5rem);
 
-  --font-body: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: ui-serif, Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+  /*
+   * Quatro fontes, quatro papéis, e nenhuma é decorativa à toa. A Lilita One só
+   * aparece nos botões do elenco — é o peso "gordo" que dá o ar de adesivo — e a
+   * Edu QLD Hand é manuscrita de propósito, para citar o que a autora escreveu.
+   */
+  --font-body: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'McLaren', ui-sans-serif, system-ui, sans-serif;
+  --font-cast: 'Lilita One', 'Montserrat', ui-sans-serif, sans-serif;
+  --font-quote: 'Edu QLD Hand', 'Montserrat', ui-sans-serif, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #17151a;
-    --bg-soft: #1e1b21;
-    --surface: #221f26;
-    --text: #efe9e5;
-    --text-muted: #a69da6;
-    --border: #322e38;
+/*
+ * O tema escuro é o MESMO conjunto de tokens com outros valores.
+ *
+ * Nada aqui descreve componente. Se um componente precisar mudar por causa do
+ * tema, o que está faltando é um token, não uma regra condicional.
+ *
+ * Repare que a decisão NÃO vem mais de `prefers-color-scheme`. Ela vem do
+ * atributo `data-theme` no <html>, escrito pelo script inline do
+ * `nuxt.config.ts` antes da página pintar. A preferência do sistema ainda conta,
+ * mas como valor inicial de quem nunca escolheu — depois disso quem manda é o
+ * botão, e o sistema não pode sobrescrever uma escolha explícita.
+ */
+:root[data-theme='dark'] {
+  color-scheme: dark;
 
-    --accent: #f099af;
-    --accent-strong: #f7b8c7;
-    --accent-soft: #33222a;
+  --bg-grad-from: #94367b;
+  --bg-grad-to: #3a797c;
+  --bg: #84427b;
+  --bg-soft: #96498a;
 
-    --danger: #ffb4ab;
-    --danger-soft: #3a2022;
+  --surface: #00687a;
 
-    --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);
-    --shadow-md: 0 10px 30px -18px rgb(0 0 0 / 70%);
-  }
+  --ink: #f4fbfa;
+  --ink-muted: #bcd9d3;
+  --text: var(--ink);
+  --text-muted: var(--ink-muted);
+  --border: #1c7f8c;
+
+  /* No escuro o link inverte: claro sobre fundo escuro, pelo mesmo motivo. */
+  --link: #8fe3ea;
+  --link-hover: #c4fee6;
+
+  --accent: #8f3b7b;
+  --accent-strong: #a4478e;
+  --accent-ink: #ffffff;
+  --accent-soft: #4a2350;
+
+  --brand: #c4fee6;
+  --brand-ink: #123033;
+
+  --danger: #ffb4ab;
+  --danger-soft: #3a2022;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 35%);
+  --shadow-md: 0 10px 30px -18px rgb(0 0 0 / 75%);
 }
 
 *,
@@ -82,7 +174,19 @@ html {
 
 body {
   margin: 0;
-  background: var(--bg);
+
+  /*
+   * O gradiente do mockup, com `fixed` de propósito.
+   *
+   * `fixed` faz o gradiente cobrir a JANELA e não a altura do documento. Sem
+   * ele, uma página longa estica o gradiente inteiro e o pé dela fica desbotado,
+   * porque as duas pontas foram medidas para caber num ecrã.
+   */
+  background-color: var(--bg);
+  background-image: linear-gradient(180deg, var(--bg-grad-from), var(--bg-grad-to));
+  background-attachment: fixed;
+  min-height: 100vh;
+
   color: var(--text);
   font-family: var(--font-body);
   font-size: 1rem;
@@ -96,7 +200,15 @@ h2,
 h3,
 h4 {
   font-family: var(--font-heading);
-  font-weight: 600;
+
+  /*
+   * 400 de propósito, mesmo sendo título.
+   *
+   * A McLaren só existe no peso 400. Pedir 600 aqui faria o navegador
+   * inventar um negrito falso, engordando os traços por conta própria — e
+   * negrito sintético em fonte display aparece como borrão nas curvas.
+   */
+  font-weight: 400;
   line-height: 1.25;
   letter-spacing: -0.01em;
   text-wrap: balance;
@@ -118,13 +230,13 @@ p {
 }
 
 a {
-  color: var(--accent-strong);
+  color: var(--link);
   text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
   text-underline-offset: 0.2em;
 }
 
 a:hover {
-  color: var(--accent);
+  color: var(--link-hover);
   text-decoration-color: currentColor;
 }
 
@@ -134,7 +246,7 @@ img {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--link);
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -165,7 +277,7 @@ img {
   transform: translate(-50%, -120%);
   z-index: 50;
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-ink);
   padding: 0.5rem 1rem;
   border-radius: 0 0 var(--radius) var(--radius);
   text-decoration: none;
@@ -203,6 +315,14 @@ img {
   min-height: 64px;
 }
 
+/* Botão de tema e marca juntos, do lado esquerdo do cabeçalho. */
+.site__header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
 .brand {
   display: flex;
   flex-direction: column;
@@ -213,7 +333,8 @@ img {
 .brand__name {
   font-family: var(--font-heading);
   font-size: 1.2rem;
-  font-weight: 600;
+  /* McLaren só existe no peso 400: ver o comentário em `h1..h4`. */
+  font-weight: 400;
 }
 
 .brand__tagline {
@@ -239,8 +360,8 @@ img {
 }
 
 .site__nav a.router-link-active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
+  color: var(--link);
+  border-bottom-color: var(--link);
 }
 
 .site__main {
@@ -272,7 +393,7 @@ img {
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--link);
   margin-bottom: 0.5rem;
 }
 
@@ -332,7 +453,7 @@ img {
 .tab--active,
 .tab--active:hover {
   background: var(--accent-soft);
-  color: var(--accent-strong);
+  color: var(--link);
   font-weight: 600;
 }
 
@@ -404,7 +525,7 @@ img {
 }
 
 .post-card__title a:hover {
-  color: var(--accent);
+  color: var(--link-hover);
 }
 
 .post-card__excerpt {
@@ -436,15 +557,21 @@ img {
   padding: 0.15rem 0.6rem;
   border-radius: 999px;
   background: var(--accent-soft);
-  color: var(--accent-strong);
+  color: var(--link);
   font-size: 0.78rem;
   text-decoration: none;
   white-space: nowrap;
 }
 
+/*
+ * No hover o rótulo vira botão cheio, e por isso troca de tinta junto.
+ *
+ * O `color: #fff` que estava aqui era fixo: funcionava por sorte no tema antigo,
+ * e neste deixaria texto branco em cima do ciano claro — ilegível.
+ */
 .tag:hover {
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-ink);
 }
 
 .empty-state {
@@ -521,7 +648,7 @@ img {
 }
 
 .back-link:hover {
-  color: var(--accent);
+  color: var(--link-hover);
 }
 
 /* ==========================================================================
@@ -558,7 +685,7 @@ img {
 .prose blockquote {
   margin: 1.75em 0;
   padding: 0.25em 0 0.25em 1.25em;
-  border-left: 3px solid var(--accent);
+  border-left: 3px solid var(--link);
   color: var(--text-muted);
   font-style: italic;
 }
@@ -642,7 +769,7 @@ img {
 }
 
 .search-form input:focus-visible {
-  border-color: var(--accent);
+  border-color: var(--link);
 }
 
 .btn {
@@ -651,7 +778,7 @@ img {
   border: 0;
   border-radius: var(--radius);
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-ink);
   font: inherit;
   font-weight: 500;
   cursor: pointer;
@@ -660,23 +787,37 @@ img {
 
 .btn:hover {
   background: var(--accent-strong);
-  color: #fff;
+  color: var(--accent-ink);
 }
 
-@media (prefers-color-scheme: dark) {
-  .btn {
-    color: #1a171d;
-  }
-  .btn:hover {
-    color: #1a171d;
-  }
-  .tag:hover {
-    color: #1a171d;
-  }
-  .skip-link {
-    color: #1a171d;
-  }
+/*
+ * Botão desabilitado.
+ *
+ * Existe por causa do "Rabiscos" da capa, que por enquanto é só visual. Ele fica
+ * desabilitado de verdade em vez de parecer clicável: um botão que não responde
+ * ao clique faz a pessoa concluir que o site está quebrado, e aí ela desconfia
+ * do resto da página também.
+ *
+ * O `:disabled:hover` repete as cores do estado normal para o botão morto não
+ * reagir ao ponteiro, que é o que se espera de algo que não faz nada.
+ */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
+
+.btn:disabled:hover {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/*
+ * Aqui existia um bloco `@media (prefers-color-scheme: dark)` que reescrevia a
+ * cor do texto de `.btn`, `.tag` e `.skip-link`. Ele foi removido porque o token
+ * `--accent-ink` responde a mesma pergunta para todos os três, e responde também
+ * quando o tema foi escolhido pelo botão e não pelo sistema — que era justamente
+ * o caso em que o bloco antigo errava.
+ */
 
 /* ==========================================================================
    Painel e formulários
@@ -740,7 +881,7 @@ img {
 }
 
 .field input:focus-visible {
-  border-color: var(--accent);
+  border-color: var(--link);
 }
 
 /* Mensagem de erro do formulário. A cor sozinha não basta para quem não
@@ -824,6 +965,6 @@ img {
   font-family: var(--font-heading);
   font-size: clamp(3rem, 12vw, 5rem);
   line-height: 1;
-  color: var(--accent);
+  color: var(--link);
   margin-bottom: 0.5rem;
 }
