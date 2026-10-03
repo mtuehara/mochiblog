@@ -64,7 +64,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <div>
+  <div class="container">
     <NuxtLink class="back-link" to="/">← Todos os posts</NuxtLink>
 
     <header class="page-head">

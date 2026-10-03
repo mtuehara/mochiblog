@@ -45,6 +45,16 @@ const currentPage = computed(() => data.value?.page ?? 1)
 const totalPages = computed(() => data.value?.totalPages ?? 1)
 
 /**
+ * A referência para a capa, usada para medir a rolagem.
+ *
+ * O `div` em volta da capa, no template, parece desnecessário e não é: um `ref`
+ * num componente Vue devolve a INSTÂNCIA do componente, e o que precisamos aqui é
+ * a altura do elemento na página.
+ */
+const capa = ref<HTMLElement | null>(null)
+const { progresso } = useScrollProgress(capa)
+
+/**
  * `title` cuida do `<title>` da aba; `ogTitle` e `ogDescription` cuidam do
  * cartão de preview quando alguém compartilha o link. São coisas diferentes e
  * precisam ser declaradas separadamente.
@@ -61,48 +71,81 @@ useSeoMeta({
 
 <template>
   <div>
-    <!-- A capa: elenco, apresentação e os dois botões, tudo dentro dela. -->
-    <HomeCover />
+    <!--
+      A capa ocupa a tela inteira e NÃO tem container: é a única parte do site
+      que usa a largura toda. Foi por causa dela que o layout deixou de
+      embrulhar as páginas num container fixo — agora cada página decide a
+      própria largura.
+
+      O `ref` existe porque é a altura da capa que define quando os filtros
+      aparecem.
+    -->
+    <div ref="capa">
+      <HomeCover />
+    </div>
 
     <!--
-      `id="posts"` é o destino da âncora do botão "Mistos/Todos" da capa.
+      A barra de filtros, logo depois da capa.
 
-      O título da lista é um `<h2>`, e não um `<h1>`, porque o `<h1>` da página
-      fica na capa. Duas manchetes de nível 1 na mesma página não são erro, mas
-      dizem ao buscador que existem dois assuntos principais onde só existe um.
+      Ela é `sticky`, então gruda no alto quando a rolagem chega nela, e some
+      quando a capa volta a aparecer.
     -->
-    <section id="posts">
-      <header class="page-head">
-        <h2>Últimos posts</h2>
-      </header>
+    <CastFilterBar :progresso="progresso" />
+
+    <div class="container">
+      <!--
+        `id="posts"` é o destino da âncora de cada personagem da capa.
+
+        O título da lista é um `<h2>`, e não um `<h1>`, porque o `<h1>` da página
+        fica na capa. Duas manchetes de nível 1 na mesma página não são erro, mas
+        dizem ao buscador que existem dois assuntos principais onde só existe um.
+      -->
+      <section id="posts" class="home__posts">
+        <header class="page-head">
+          <h2>Últimos posts</h2>
+        </header>
 
       <ul v-if="posts.length" class="post-list">
-        <PostCard v-for="post in posts" :key="post.id" :post="post" />
-      </ul>
+          <PostCard v-for="post in posts" :key="post.id" :post="post" />
+        </ul>
 
-      <p v-else class="empty-state">Nenhum post publicado ainda. Volte em breve.</p>
+        <p v-else class="empty-state">Nenhum post publicado ainda. Volte em breve.</p>
 
-      <nav v-if="totalPages > 1" class="pagination" aria-label="Paginação">
-        <NuxtLink
-          v-if="currentPage > 1"
-          :to="{ query: currentPage > 2 ? { page: currentPage - 1 } : {} }"
-          rel="prev"
-        >
-          ← Mais recentes
-        </NuxtLink>
-        <span v-else />
+        <nav v-if="totalPages > 1" class="pagination" aria-label="Paginação">
+          <NuxtLink
+            v-if="currentPage > 1"
+            :to="{ query: currentPage > 2 ? { page: currentPage - 1 } : {} }"
+            rel="prev"
+          >
+            ← Mais recentes
+          </NuxtLink>
+          <span v-else />
 
-        <span class="pagination__status">Página {{ currentPage }} de {{ totalPages }}</span>
+          <span class="pagination__status">Página {{ currentPage }} de {{ totalPages }}</span>
 
-        <NuxtLink
-          v-if="currentPage < totalPages"
-          :to="{ query: { page: currentPage + 1 } }"
-          rel="next"
-        >
-          Mais antigos →
-        </NuxtLink>
-        <span v-else />
-      </nav>
-    </section>
+          <NuxtLink
+            v-if="currentPage < totalPages"
+            :to="{ query: { page: currentPage + 1 } }"
+            rel="next"
+          >
+            Mais antigos →
+          </NuxtLink>
+          <span v-else />
+        </nav>
+      </section>
+    </div>
   </div>
 </template>
+
+<style scoped>
+/**
+ * O recuo da âncora.
+ *
+ * Sem ele, ao clicar numa personagem a lista pararia no alto da tela e o título
+ * ficaria escondido atrás da barra de filtros, que está grudada ali.
+ */
+.home__posts {
+  scroll-margin-top: 5rem;
+  padding-block: clamp(1.5rem, 5vw, 3rem);
+}
+</style>

@@ -32,6 +32,13 @@ useSeoMeta({
 </script>
 
 <template>
-  <AdminPanel v-if="session.authenticated" />
-  <AdminLogin v-else />
+  <!--
+    O container é aplicado aqui desde que o layout deixou de embrulhar as
+    páginas. O `div` também resolve outro detalhe: uma página precisa de um
+    elemento raiz só, e antes estes dois se alternavam como raízes.
+  -->
+  <div class="container">
+    <AdminPanel v-if="session.authenticated" />
+    <AdminLogin v-else />
+  </div>
 </template>

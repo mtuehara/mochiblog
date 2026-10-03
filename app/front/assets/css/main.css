@@ -310,6 +310,19 @@ img {
 
 .site__main {
   flex: 1;
+}
+
+/*
+ * O respiro vertical de quem usa a caixa de leitura.
+ *
+ * Ficava no `site__main`, e mudou de lugar junto com a largura: a capa da home
+ * ocupa a tela inteira e não pode herdar margem nenhuma, senão a "tela cheia"
+ * passa a exigir uma rolagem de alguns pixels antes de acabar.
+ *
+ * Assim, quem entra num container ganha o respiro; quem não entra (a capa) fica
+ * com o espaço que definiu para si. Uma regra, e os dois casos ficam certos.
+ */
+.site__main > .container {
   padding-block: clamp(1.5rem, 5vw, 3rem);
 }
 

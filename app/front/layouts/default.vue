@@ -36,10 +36,20 @@ const { siteName, siteTagline } = useRuntimeConfig().public
       </div>
     </div>
 
+    <!--
+      O `<slot />` fica solto, sem container.
+
+      Antes o layout embrulhava toda página numa caixa de 780px. Isso deixou de
+      servir quando a capa da home passou a ocupar a tela inteira: uma seção de
+      largura total não cabe dentro de um container, e a saída seria um
+      "full-bleed" com `100vw`, que erra a conta por causa da barra de rolagem.
+
+      Então a largura virou decisão de cada página, e quem quer a caixa de
+      leitura usa `class="container"` — que continua sendo o respiro vertical,
+      aplicado pelo `main.css` a todo container dentro da `main`.
+    -->
     <main id="conteudo" class="site__main">
-      <div class="container">
-        <slot />
-      </div>
+      <slot />
     </main>
 
     <footer class="site__footer">

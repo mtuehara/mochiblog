@@ -185,7 +185,7 @@ Ela só é segura porque todo HTML que sai do BFF passou por aqui.
 Os rótulos são padronizados com a primeira letra maiúscula **no BFF**, no momento
 em que o post é lido. A tentação natural é fazer isso na interface, e é a
 decisão errada por um motivo prático: o nome do rótulo aparece em quatro lugares
-(abas, chips de cada card, título da página de assunto e `<title>`). Cada ponto
+(elenco, chips de cada card, título da página de assunto e `<title>`). Cada ponto
 de exibição formatando por conta própria significa que basta um esquecimento para
 o site mostrar "purple" numa aba e "Purple" no card. Padronizando na entrada,
 tudo que vem depois herda a correção, inclusive `/api/labels`, que é agregado a
@@ -382,39 +382,77 @@ declarando a versão original e a duplicação permanece.
 
 ---
 
-## 8. Navegação por assunto (as abas)
+## 8. Navegação por assunto (o elenco)
 
-A barra de abas do topo é gerada a partir de `/api/labels`, e cada aba é um link
-para `/tag/<rótulo>`. Três decisões estão embutidas aí.
+A navegação por assunto é feita pelas **pílulas das quatro personagens**, cada uma
+apontando para `/tag/<rótulo>`. Não existe mais barra de abas no topo.
 
-**As abas vêm da API, nunca fixas no código.** Os rótulos quem cria é quem
-escreve o post, dentro do Blogger. Uma barra fixa com quatro abas continuaria
-funcionando no dia em que aparecesse um quinto rótulo, mas o post ficaria
-invisível em qualquer aba, para sempre. Vindo da API, a barra acompanha o
-conteúdo sozinha.
+### O que mudou, e por quê
 
-**Cada aba é um endereço próprio, não estado interno.** A alternativa seria
+A versão anterior montava a barra de abas a partir de `/api/labels`, e a decisão
+estava escrita aqui com estas palavras: *"as abas vêm da API, nunca fixas no
+código"*. O objetivo era que um rótulo novo criado no Blogger nunca deixasse
+post invisível.
+
+Isso foi **revertido de propósito**, e o motivo é o desenho: cada pílula tem cor e
+desenho próprios, e não existe gradiente para inventar a partir de um rótulo
+desconhecido. O elenco é curado, com quatro nomes, e a reversão fica registrada
+para quem mexer depois não achar que foi descuido.
+
+O que se perde: um rótulo que não seja de nenhuma das quatro personagens não tem
+pílula. O que continua valendo: o post **não desaparece** — ele aparece na home,
+que lista todos, e na busca. A avaliação do dono do projeto foi que o conteúdo é
+sempre marcado com um dos quatro nomes, e que manter uma linha extra de rótulos
+não se paga.
+
+### Onde as pílulas aparecem
+
+| Onde | Forma | Papel |
+|---|---|---|
+| Capa da home | Grandes, com o desenho | Convite: entrar e ver os posts |
+| Barra que acompanha a rolagem | Só o nome, com o gradiente | Filtro: trocar de assunto lendo |
+| Página de assunto | Só o nome, com o gradiente | Filtro: trocar de assunto sem voltar |
+
+As três usam a mesma pílula (`GradientPill`) e a mesma lógica de qual está acesa
+(`useCast`), então não têm como discordar entre si.
+
+### Decisões que continuam valendo
+
+**Cada assunto é um endereço próprio, não estado interno.** A alternativa seria
 trocar o conteúdo sem sair da home, deixando tudo em `/?aba=Mochi`. É mais rápido
 de sentir e pior em dois aspectos: ninguém consegue compartilhar "os posts da
-Ruka", e o buscador enxerga uma página só. Como o filtro por rótulo e a rota
-`/tag/<label>` já existiam, a versão com endereços próprios saiu sem custo.
+Ruka", e o buscador enxerga uma página só.
 
-**A aba ativa é derivada da rota, não de estado local.** Não há nada para
-sincronizar: recarregar, usar o botão voltar ou abrir o link direto mantêm a aba
-certa acesa. A comparação ignora caixa e acento, então `/tag/RUKA` e `/tag/ruka`
-acendem a mesma aba, do mesmo jeito que o BFF trata o filtro.
+**A pílula acesa é derivada da rota, não de estado local.** Não há nada para
+sincronizar: recarregar, usar o botão voltar ou abrir o link direto mantêm a
+pílula certa acesa. A comparação ignora caixa e acento, então `/tag/RUKA` e
+`/tag/ruka` acendem a mesma pílula, do mesmo jeito que o BFF trata o filtro.
 
-Consequências aceitas:
+### A capa, e a barra que acompanha a rolagem
 
-- **Post sem rótulo** aparece apenas em "Todos". É justamente por isso que essa
-  aba precisa existir: ela é a garantia de que nenhum post desaparece.
-- **Muitos rótulos** viram uma barra longa. A linha rola na horizontal, então
-  funciona com quinze. Muito além disso, o certo passa a ser um menu suspenso.
-- **Dentro de um post**, nenhuma aba fica acesa, porque a barra só conhece a
+A home abre com uma tela inteira só de desenhos, em diagonal ascendente — as
+quatro personagens são voadoras, e uma fileira reta não diria isso. Cada uma é uma
+âncora para a lista de posts, e o nome fica embaixo do desenho, sempre visível.
+Esconder o nome de quem está escolhendo é esconder a informação de que ele
+precisa, e no celular não existe ponteiro para passar por cima.
+
+A barra de filtros fica logo depois da capa e é `sticky`. A presença dela segue a
+rolagem: invisível com a capa inteira na tela, aparecendo conforme ela sobe, e
+sumindo de volta ao subir. Quem faz a conta é o `useScrollProgress`, que devolve a
+proporção da capa que já passou; a barra recebe o número e só desenha.
+
+Enquanto está invisível, a barra é `inert`, e não apenas transparente. A
+diferença importa: `pointer-events: none` sozinho deixaria os links alcançáveis
+pelo teclado — invisíveis e alcançáveis é a pior combinação possível.
+
+### Consequências aceitas
+
+- **A capa não cabe no container de leitura.** Ela usa a largura toda, e por isso
+  o layout deixou de embrulhar as páginas: cada página decide a própria largura, e
+  quem quer a caixa estreita usa `class="container"`.
+- **Post sem rótulo** aparece só na home e na busca.
+- **Dentro de um post**, nenhuma pílula fica acesa, porque elas só conhecem a
   rota. Está registrado nas pendências.
-- A página de assunto perdeu o link "← Todos os posts": a aba "Todos" faz
-  exatamente isso, e dois caminhos para o mesmo lugar confundem mais do que
-  ajudam.
 
 ---
 
@@ -521,14 +559,14 @@ Em ordem de valor.
 
 - [ ] **Nome canônico do rótulo no `<h1>` da página de assunto.** Hoje o título
       mostra o rótulo como veio na URL, então `/tag/RUKA` exibe "RUKA" enquanto a
-      aba acesa diz "Ruka". Todas as ligações internas usam a grafia original,
-      então isso só aparece em endereço digitado à mão. A correção é ler o nome
-      canônico de `/api/labels` (a chave de cache `'labels'` já é compartilhada)
-      e emitir também um `canonical`, para as variações não competirem entre si.
-- [ ] **Aba acesa dentro de um post.** Hoje, em `/post/<slug>`, nenhuma aba fica
-      destacada, porque a barra deriva o estado apenas da rota. Dá para acender a
-      aba do post que está sendo lido, mas exigiria estado compartilhado entre a
-      página e o layout, com risco de ficar desatualizado. Não vale a troca
+      pílula acesa diz "Ruka". Todas as ligações internas usam a grafia original,
+      então isso só aparece em endereço digitado à mão. A correção é usar o elenco
+      (`data/cast.ts`) para achar o nome canônico, caindo para a URL quando o
+      rótulo não for de ninguém do elenco.
+- [ ] **Pílula acesa dentro de um post.** Hoje, em `/post/<slug>`, nenhuma pílula
+      fica destacada, porque elas derivam o estado apenas da rota. Dá para acender
+      a pílula da personagem dona do post, mas exigiria estado compartilhado entre
+      a página e a barra, com risco de ficar desatualizado. Não vale a troca
       enquanto a barra sem destaque não incomodar.
 
 - [ ] **Testes.** O `buildApp()` já está separado do `listen()` exatamente para

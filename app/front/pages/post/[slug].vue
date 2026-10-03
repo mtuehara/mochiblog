@@ -128,7 +128,8 @@ useHead({
 </script>
 
 <template>
-  <article v-if="post">
+  <!-- O container é aplicado pela própria página: ver o comentário no layout. -->
+  <article v-if="post" class="container">
     <NuxtLink class="back-link" to="/">← Todos os posts</NuxtLink>
 
     <header class="post__header">

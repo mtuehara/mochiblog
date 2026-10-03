@@ -58,7 +58,12 @@ useSeoMeta({
 </script>
 
 <template>
-  <div>
+  <!--
+    O container é aplicado pela própria página desde que o layout deixou de
+    embrulhar tudo: a capa da home precisa da largura inteira, e as páginas de
+    leitura continuam querendo a caixa estreita.
+  -->
+  <div class="container">
     <!--
       O caminho de volta. Ele era desnecessário enquanto o cabeçalho existia e
       tinha uma aba "Todos"; agora o cabeçalho saiu, e sem isto a única saída da
