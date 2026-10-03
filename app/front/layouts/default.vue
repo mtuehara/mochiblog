@@ -1,4 +1,28 @@
 <script setup lang="ts">
+/**
+ * O layout do site.
+ *
+ * ---------------------------------------------------------------------------
+ * AQUI EXISTIA UM CABEÇALHO, E ELE SAIU INTEIRO
+ * ---------------------------------------------------------------------------
+ * Ele tinha a marca, dois links e uma barra de abas por rótulo, e era fixo no
+ * topo. Saiu por decisão de desenho: no mockup o alto da home é a capa, sem
+ * barra nenhuma, e a navegação por assunto passou a ser o elenco das
+ * personagens.
+ *
+ * O que substituiu cada pedaço:
+ *
+ *   - as abas por rótulo  -> as pílulas do elenco, que são os filtros
+ *   - a marca             -> o nome do site, no rodapé
+ *   - os links de navegar -> o rodapé, porque sem ele não haveria como chegar
+ *                            à busca nem sair de uma página interna sem usar o
+ *                            botão voltar do navegador
+ *
+ * O círculo do tema ficou onde estava no mockup, no alto à esquerda. Ele NÃO é
+ * fixo: rola junto com a página. Fixo, ele passaria por cima do texto em tela
+ * estreita, e trocar de tema não é coisa que precise estar ao alcance o tempo
+ * todo.
+ */
 const { siteName, siteTagline } = useRuntimeConfig().public
 </script>
 
@@ -6,45 +30,11 @@ const { siteName, siteTagline } = useRuntimeConfig().public
   <div class="site">
     <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
-    <header class="site__header">
+    <div class="site__topo">
       <div class="container">
-        <div class="site__header-inner">
-          <!--
-            O círculo do tema vem ANTES da marca, no canto superior esquerdo,
-            como no mockup.
-
-            Ele vive dentro do cabeçalho fixo, e não solto sobre a página, por
-            um motivo prático: trocar de tema é algo que se quer poder fazer em
-            qualquer ponto da leitura, e solto ele sairia da tela no primeiro
-            rolar.
-
-            O grupo à esquerda existe porque o cabeçalho usa `space-between`.
-            Com três filhos soltos, a marca seria empurrada para o meio. Num
-            grupo, ela fica ao lado do botão e o menu continua na ponta direita.
-          -->
-          <div class="site__header-left">
-            <UiThemeToggle />
-
-            <NuxtLink to="/" class="brand">
-              <span class="brand__name">{{ siteName }}</span>
-              <span class="brand__tagline">{{ siteTagline }}</span>
-            </NuxtLink>
-          </div>
-
-          <nav class="site__nav" aria-label="Navegação principal">
-            <NuxtLink to="/">Início</NuxtLink>
-            <NuxtLink to="/busca">Busca</NuxtLink>
-          </nav>
-        </div>
-
-        <!--
-          As abas ficam DENTRO do header, que é sticky, para continuarem
-          acessíveis enquanto o leitor rola. Ficam fora do header-inner porque
-          são uma segunda linha, e não parte da fileira de marca e menu.
-        -->
-        <LabelTabs />
+        <UiThemeToggle />
       </div>
-    </header>
+    </div>
 
     <main id="conteudo" class="site__main">
       <div class="container">
@@ -54,7 +44,12 @@ const { siteName, siteTagline } = useRuntimeConfig().public
 
     <footer class="site__footer">
       <div class="container">
-        <p>{{ siteName }} · feito com carinho (e um pouco de código)</p>
+        <nav class="site__footer-nav" aria-label="Navegação">
+          <NuxtLink to="/">Início</NuxtLink>
+          <NuxtLink to="/busca">Busca</NuxtLink>
+        </nav>
+
+        <p class="site__footer-nota">{{ siteName }} · {{ siteTagline }}</p>
       </div>
     </footer>
   </div>

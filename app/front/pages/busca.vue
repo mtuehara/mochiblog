@@ -65,9 +65,16 @@ useSeoMeta({
 
 <template>
   <div>
+    <NuxtLink class="back-link" to="/">← Todos os posts</NuxtLink>
+
     <header class="page-head">
       <h1>Busca</h1>
-      <p class="page-head__lead">Procure por um ingrediente, um assunto ou uma palavra do texto.</p>
+      <!--
+        O texto antigo mandava procurar por "um ingrediente", herança de quando
+        o site era um blog de receitas. O que se procura aqui é texto, que é o que
+        o blog tem.
+      -->
+      <p class="page-head__lead">Procure por um título, um assunto ou uma palavra do texto.</p>
     </header>
 
     <form class="search-form" role="search" @submit.prevent="submit">

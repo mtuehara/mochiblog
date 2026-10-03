@@ -298,70 +298,14 @@ img {
   flex-direction: column;
 }
 
-.site__header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border);
-}
-
-.site__header-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space);
-  min-height: 64px;
-}
-
-/* Botão de tema e marca juntos, do lado esquerdo do cabeçalho. */
-.site__header-left {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  min-width: 0;
-}
-
-.brand {
-  display: flex;
-  flex-direction: column;
-  text-decoration: none;
-  color: inherit;
-}
-
-.brand__name {
-  font-family: var(--font-heading);
-  font-size: 1.2rem;
-  /* McLaren só existe no peso 400: ver o comentário em `h1..h4`. */
-  font-weight: 400;
-}
-
-.brand__tagline {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-}
-
-.site__nav {
-  display: flex;
-  gap: 1rem;
-  font-size: 0.95rem;
-}
-
-.site__nav a {
-  color: var(--text-muted);
-  text-decoration: none;
-  padding: 0.35rem 0;
-  border-bottom: 2px solid transparent;
-}
-
-.site__nav a:hover {
-  color: var(--text);
-}
-
-.site__nav a.router-link-active {
-  color: var(--link);
-  border-bottom-color: var(--link);
+/*
+ * O alto da página: só o círculo do tema.
+ *
+ * Aqui existia o cabeçalho fixo, com marca, menu e abas. O que substituiu cada
+ * pedaço está comentado no `layouts/default.vue`.
+ */
+.site__topo {
+  padding-top: clamp(0.75rem, 2vw, 1.25rem);
 }
 
 .site__main {
@@ -376,7 +320,34 @@ img {
   color: var(--text-muted);
 }
 
-.site__footer p {
+/*
+ * A navegação mora no rodapé desde que o cabeçalho saiu.
+ *
+ * Não é só estética: sem ela, a busca ficaria inalcançável e uma página interna
+ * teria apenas o botão voltar do navegador como saída.
+ */
+.site__footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-bottom: 0.6rem;
+}
+
+.site__footer-nav a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.site__footer-nav a:hover {
+  color: var(--link);
+}
+
+.site__footer-nav a.router-link-active {
+  color: var(--link);
+  font-weight: 600;
+}
+
+.site__footer-nota {
   margin: 0;
 }
 
@@ -403,59 +374,23 @@ img {
   margin: 0;
 }
 
-/* ==========================================================================
-   Abas de assunto
-   --------------------------------------------------------------------------
-   Segunda linha do header sticky. Os rótulos vêm do blog, então a quantidade
-   é desconhecida: a linha rola na horizontal em vez de quebrar ou estourar o
-   layout. Com quatro rótulos não há rolagem nenhuma; com quinze, ainda
-   funciona.
-   ========================================================================== */
-
-.tabs {
-  padding-bottom: 0.6rem;
-}
-
-.tabs__list {
-  display: flex;
-  gap: 0.25rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  overflow-x: auto;
-  /* Esconde a barra de rolagem: a rolagem continua funcionando por toque,
-     teclado e trackpad, só não fica um risco cinza cortando o header. */
-  scrollbar-width: none;
-}
-
-.tabs__list::-webkit-scrollbar {
-  display: none;
-}
-
-.tab {
-  display: inline-block;
-  padding: 0.3rem 0.7rem;
-  border-radius: 999px;
-  font-size: 0.88rem;
-  color: var(--text-muted);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.tab:hover {
-  background: var(--bg-soft);
-  color: var(--text);
-}
-
-/* A aba ativa precisa se distinguir por mais de uma coisa: só cor falha para
-   quem não distingue as duas tonalidades. Por isso fundo, cor e peso juntos. */
-.tab--active,
-.tab--active:hover {
-  background: var(--accent-soft);
-  color: var(--link);
-  font-weight: 600;
-}
+/*
+ * Aqui ficava a barra de abas de assunto, que lia os rótulos da API e era a
+ * segunda linha do cabeçalho.
+ *
+ * Ela saiu junto com o cabeçalho: os filtros passaram a ser as pílulas do elenco
+ * (`GradientPill`, alimentadas pelo `useCast`), que são curadas e trazem cor e
+ * desenho próprios.
+ *
+ * A consequência fica registrada de propósito, porque ela contraria uma decisão
+ * antiga do projeto. A seção 8 do `docs/arquitetura.md` dizia que os rótulos vêm
+ * da API justamente para que um rótulo novo nunca deixe post invisível. Agora um
+ * rótulo que não seja de nenhuma das quatro personagens não tem pílula nenhuma.
+ *
+ * O Mau avaliou o risco e aceitou, com o argumento de que o conteúdo é sempre
+ * marcado com um dos quatro nomes. Se um dia aparecer um rótulo fora do elenco, o
+ * post continua alcançável pela busca e por "Mistos/Todos", mas não pelo filtro.
+ */
 
 /* ==========================================================================
    Lista de posts

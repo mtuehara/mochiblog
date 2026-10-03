@@ -1,40 +1,21 @@
 <script setup lang="ts">
-import { CAST } from '~/data/cast'
-
 /**
- * O elenco: uma pílula e um desenho por personagem.
+ * O elenco na capa: uma pílula e um desenho por personagem.
  *
- * Este é o primeiro pedaço da capa do site. Ele não busca nada na API — tudo o
- * que aparece aqui vem de `data/cast.ts`, porque é uma lista curada, com cor e
- * desenho escolhidos pessoa a pessoa.
+ * Ele não busca nada na API — tudo o que aparece aqui vem de `data/cast.ts`,
+ * porque é uma lista curada, com cor e desenho escolhidos pessoa a pessoa.
  *
- * A pílula acesa é derivada da ROTA, não de estado local, do mesmo jeito que as
- * abas do site já faziam: assim recarregar a página, usar o botão voltar ou
- * abrir `/tag/Ruka` direto mantêm o destaque certo sem nada para sincronizar.
+ * Quem decide qual pílula está acesa e para onde cada uma aponta é o `useCast`,
+ * o mesmo que o filtro da página de assunto usa. Aqui só muda o desenho, que é o
+ * que a capa tem e o filtro não.
  */
-const route = useRoute()
-
-const currentLabel = computed<string | null>(() => {
-  const raw = route.params.label
-  if (Array.isArray(raw)) return raw[0] ?? null
-  return raw ?? null
-})
-
-/**
- * A pílula fica acesa quando a página atual é o assunto daquela personagem.
- *
- * A comparação ignora caixa e acento, então `/tag/purple` e `/tag/Purple`
- * acendem a mesma pílula.
- */
-function isActive(label: string): boolean {
-  return currentLabel.value !== null && sameLabel(label, currentLabel.value)
-}
+const { members, isActive, routeFor } = useCast()
 </script>
 
 <template>
   <ul class="elenco">
     <li
-      v-for="(membro, indice) in CAST"
+      v-for="(membro, indice) in members"
       :key="membro.label"
       class="elenco__item"
       :style="{ '--posicao': indice }"
@@ -45,7 +26,7 @@ function isActive(label: string): boolean {
       -->
       <UiGradientPill
         class="elenco__pilula"
-        :to="`/tag/${encodeURIComponent(membro.label)}`"
+        :to="routeFor(membro)"
         :color-from="membro.gradient[0]"
         :color-to="membro.gradient[1]"
         :active="isActive(membro.label)"

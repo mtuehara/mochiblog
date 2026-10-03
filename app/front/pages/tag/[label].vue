@@ -29,6 +29,24 @@ const posts = computed(() => data.value?.items ?? [])
 const currentPage = computed(() => data.value?.page ?? 1)
 const totalPages = computed(() => data.value?.totalPages ?? 1)
 
+/**
+ * O resumo abaixo do título.
+ *
+ * É montado aqui, e não no template, por um motivo bobo e teimoso: no template a
+ * frase vira uma sequência de interpolações separadas por quebras de linha, e
+ * cada quebra vira um espaço na tela. O resultado era "1 post encontrado .",
+ * com o ponto solto depois de um espaço.
+ *
+ * Juntando as partes no script, a frase sai inteira e não depende de onde o
+ * editor quebrou a linha.
+ */
+const resumo = computed(() => {
+  const contagem = posts.value.length
+  const texto = `${contagem} ${contagem === 1 ? 'post encontrado' : 'posts encontrados'}`
+
+  return totalPages.value > 1 ? `${texto} nesta página.` : `${texto}.`
+})
+
 useSeoMeta({
   title: () =>
     currentPage.value > 1 ? `${label.value} · Página ${currentPage.value}` : label.value,
@@ -41,15 +59,28 @@ useSeoMeta({
 
 <template>
   <div>
+    <!--
+      O caminho de volta. Ele era desnecessário enquanto o cabeçalho existia e
+      tinha uma aba "Todos"; agora o cabeçalho saiu, e sem isto a única saída da
+      página seria o botão voltar do navegador.
+    -->
+    <NuxtLink class="back-link" to="/">← Todos os posts</NuxtLink>
+
     <header class="page-head">
       <span class="page-head__eyebrow">Assunto</span>
       <h1>{{ label }}</h1>
-      <p class="page-head__lead">
-        {{ posts.length }}
-        {{ posts.length === 1 ? 'post encontrado' : 'posts encontrados' }}
-        <template v-if="totalPages > 1">nesta página</template>.
-      </p>
+      <p class="page-head__lead">{{ resumo }}</p>
     </header>
+
+    <!--
+      Os filtros, aqui na página em que eles importam.
+
+      Sem esta linha, trocar de assunto exigiria voltar para a home, porque as
+      pílulas da capa só existem lá. São as mesmas pílulas, sem os desenhos: a
+      lógica de qual está acesa vem do `useCast`, então as duas telas não podem
+      discordar.
+    -->
+    <CastPills class="assunto__pilulas" />
 
     <ul v-if="posts.length" class="post-list">
       <PostCard v-for="post in posts" :key="post.id" :post="post" />
@@ -80,3 +111,15 @@ useSeoMeta({
     </nav>
   </div>
 </template>
+
+<style scoped>
+/**
+ * O respiro depois dos filtros.
+ *
+ * Fica aqui, e não dentro do `CastPills`, porque o espaçamento depende de quem
+ * vem depois — e o componente das pílulas não sabe o que isso é.
+ */
+.assunto__pilulas {
+  margin-bottom: 2rem;
+}
+</style>

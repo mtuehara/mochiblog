@@ -13,9 +13,10 @@
  * menos do que fazer o front importar código de execução do pacote
  * compartilhado, o que arrastaria o Zod junto para o bundle do navegador.
  *
- * Esta função existia dentro do `LabelTabs`. Quando o elenco passou a precisar
- * dela também, duas cópias no mesmo aplicativo deixaram de ser aceitáveis:
- * agora é uma só, e quem quiser comparar rótulo usa esta.
+ * Esta função nasceu dentro de um componente e passou a ser usada em três
+ * lugares quando o elenco das personagens entrou em cena. Cópias da mesma regra
+ * espalhadas pelo aplicativo deixaram de ser aceitáveis: agora é uma só, e quem
+ * precisar comparar rótulo usa esta.
  */
 export function normalizeLabel(value: string): string {
   return value
