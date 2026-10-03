@@ -92,6 +92,26 @@
   --space: clamp(1rem, 2.5vw, 1.5rem);
 
   /*
+   * A geometria da capa, em tokens porque não é só dela.
+   *
+   * A linha de nomes embaixo das personagens precisa nascer com MESMA folga
+   * lateral e MESMA escada que os desenhos, para cada nome cair exatamente
+   * embaixo da sua personagem. As duas metades do movimento saem daqui.
+   */
+  --folga-capa: clamp(1rem, 6vw, 5rem);
+  --passo-escada: clamp(1.4rem, 2.6vw, 3rem);
+  --altura-linha-nomes: 4.5rem;
+
+  /*
+   * A altura da faixa do topo, onde vive o círculo do tema.
+   *
+   * É uma conta aproximada, e está isolada aqui de propósito: a capa precisa
+   * descontar as duas faixas (esta e a linha de nomes) para caber exatamente numa
+   * tela. Se um dia o círculo mudar de tamanho, é este número que muda.
+   */
+  --altura-topo: 4rem;
+
+  /*
    * Quatro fontes, quatro papéis, e nenhuma é decorativa à toa. A Lilita One só
    * aparece nos botões do elenco — é o peso "gordo" que dá o ar de adesivo — e a
    * Edu QLD Hand é manuscrita de propósito, para citar o que a autora escreveu.

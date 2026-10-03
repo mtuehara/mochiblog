@@ -91,7 +91,13 @@ withDefaults(
   color: color-mix(in srgb, #ffffff calc(var(--forca) * 100%), transparent);
 
   font-family: var(--font-cast);
-  font-size: clamp(1.05rem, 3.4vw, 1.3rem);
+
+  /*
+   * Solta, a pílula é um nome, e tem o tamanho de nome. Cheia, é um botão, e
+   * encolhe para o tamanho de botão. O `clamp` continua ali para acompanhar a
+   * largura da janela nos dois estados.
+   */
+  font-size: calc(clamp(1.05rem, 3.4vw, 1.3rem) + var(--espalhamento, 0) * 0.7rem);
   line-height: 1.2;
 
   text-decoration: none;

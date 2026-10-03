@@ -62,7 +62,7 @@ const escondida = computed(() => props.progresso < 0.5)
    * sombra de cada pílula.
    */
   padding-block: 0.75rem;
-  padding-inline: var(--space);
+  padding-inline: var(--folga-capa);
 
   /*
    * A curva da transformação, calculada UMA vez.
@@ -77,6 +77,12 @@ const escondida = computed(() => props.progresso < 0.5)
    * discordarem sem que ninguém percebesse.
    */
   --mistura: max(0, min(1, calc((var(--progresso) - 0.5) * 2)));
+
+  /*
+   * E o inverso dela: 1 é "solto" (nome espalhado, como na capa), 0 é "junto"
+   * (botão na linha). Quem desenha os nomes lê daqui.
+   */
+  --espalhamento: max(0, min(1, calc(1 - var(--mistura))));
 
   opacity: var(--progresso);
 

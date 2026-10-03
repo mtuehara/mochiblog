@@ -5,14 +5,21 @@
  * ---------------------------------------------------------------------------
  * O QUE MUDOU AQUI, E POR QUÊ
  * ---------------------------------------------------------------------------
- * A versão anterior era uma faixa no alto da página, com as pílulas coloridas
- * sempre visíveis e o painel de texto embaixo. O desenho novo inverte a ideia: a
- * capa é a tela inteira e não tem texto nenhum, os nomes só aparecem quando o
- * ponteiro passa por cima, e quem quiser os filtros rola a página.
+ * Esta seção tem SÓ os desenhos.
  *
- * Consequência prática: a capa não cabe dentro do container de leitura do site.
- * Ela é a única parte que ocupa a largura toda, e por isso o layout deixou de
- * embrulhar tudo num container fixo — cada página decide a própria largura.
+ * Antes ela também tinha o nome embaixo de cada personagem, e a barra de filtros
+ * tinha outros quatro nomes por cima dos mesmos lugares. O resultado era o que
+ * não podia ser: enquanto se rolava, dava para ver o nome saindo e um botão
+ * aparecendo logo abaixo — dois elementos para a mesma personagem.
+ *
+ * Agora existe um só. Os nomes embaixo das personagens SÃO as pílulas: elas
+ * nascem na mesma folga lateral e na mesma escada que os desenhos, então cada um
+ * aparece embaixo da sua personagem, e são elas que endurecem em botão conforme
+ * o leitor desce.
+ *
+ * Por isso a capa não é mais uma tela cheia: ela ocupa a altura da janela menos a
+ * linha de nomes, e os desenhos ficam encostados embaixo, com o céu sobrando em
+ * cima — que é para onde eles estão voando.
  */
 const { siteName } = useRuntimeConfig().public
 const { members } = useCast()
@@ -22,7 +29,7 @@ const { members } = useCast()
   <section class="capa">
     <h1 class="visually-hidden">{{ siteName }}</h1>
 
-    <ul class="capa__elenco" :style="{ '--passos': members.length - 1 }">
+    <ul class="capa__elenco">
       <li
         v-for="(membro, indice) in members"
         :key="membro.label"
@@ -41,6 +48,7 @@ const { members } = useCast()
         <a
           class="capa__item"
           href="#posts"
+          :aria-label="`Ver os posts de ${membro.label}`"
           :title="membro.fullName ? `${membro.fullName} — ver os posts` : `Ver os posts`"
         >
           <UiThemeImage
@@ -48,70 +56,40 @@ const { members } = useCast()
             :light="membro.art.light"
             :dark="membro.art.dark"
           />
-
-          <!--
-            O nome fica embaixo do desenho, sempre visível.
-
-            A primeira versão só mostrava o nome com o ponteiro em cima. Não
-            servia: escondia de quem escolhe justamente a informação de que ele
-            precisa, e no celular não existe ponteiro para passar por cima — os
-            quatro ficariam anônimos.
-          -->
-          <span
-            class="capa__nome"
-            :style="{ '--nome-de': membro.gradient[0], '--nome-ate': membro.gradient[1] }"
-          >
-            {{ membro.label }}
-          </span>
         </a>
       </li>
     </ul>
-
-    <!--
-      A dica de que existe mais coisa abaixo.
-
-      Sem ela, uma tela cheia só de desenhos não avisa que a página rola — e quem
-      chega de fora ficaria olhando uma figura sem saber que há posts ali.
-      A seta é decorativa: quem navega por leitor de tela chega aos posts pelo
-      próprio link de cada personagem.
-    -->
-    <p class="capa__dica" aria-hidden="true">↓</p>
   </section>
 </template>
 
 <style scoped>
 .capa {
-  /* `svh` é a altura da janela COM as barras do navegador visíveis. Usar `vh`
-     daria uma tela que fica maior do que o visível no celular, e a seta ficaria
-     escondida atrás da barra. O `vh` fica como reserva para navegador antigo. */
-  min-height: 100vh;
-  min-height: 100svh;
+  /*
+   * A altura da janela MENOS as duas faixas: a do topo, onde fica o círculo do
+   * tema, e a linha de nomes, que vem logo depois.
+   *
+   * É essa conta que faz o nome de cada personagem cair logo abaixo dela e tudo
+   * caber numa tela sem rolagem: a linha vive no fluxo, encostada no fim desta
+   * seção, então sobra para os desenhos exatamente isto.
+   *
+   * `svh` é a altura com as barras do navegador visíveis; `vh` fica de reserva
+   * para navegador antigo.
+   */
+  min-height: calc(100vh - var(--altura-linha-nomes) - var(--altura-topo));
+  min-height: calc(100svh - var(--altura-linha-nomes) - var(--altura-topo));
 
   display: grid;
-  align-content: center;
+
+  /*
+   * Os desenhos encostam embaixo e o espaço que sobra fica em cima — que é para
+   * onde eles estão voando. Também é o que mantém cada nome junto da sua
+   * personagem: centrados, sobraria um vão entre os pés e os nomes.
+   */
+  align-content: end;
   justify-items: center;
-  gap: clamp(1rem, 4vh, 2.5rem);
 
-  padding-block: clamp(2rem, 8vh, 5rem);
-  padding-inline: var(--folga-lateral);
-
-  /*
-   * A folga lateral é o espaço que sobra fora do elenco, e ela tem dois papéis ao
-   * mesmo tempo: afastar os desenhos da borda e definir o quanto cada um pode
-   * transbordar a própria célula. Como o teto do tamanho sai dela, aumentar a
-   * folga aumenta os desenhos — até o ponto em que a sobreposição começa a
-   * encobrir o vizinho. É por volta daqui.
-   */
-  --folga-lateral: clamp(1rem, 6vw, 5rem);
-
-  /*
-   * Quanto cada personagem sobe em relação à anterior.
-   *
-   * Cresce com a janela para o ângulo da diagonal ficar parecido em tela grande e
-   * pequena: um passo fixo em pixels pareceria íngreme no celular e quase reto num
-   * monitor largo.
-   */
-  --passo-da-escada: clamp(1.4rem, 2.6vw, 3rem);
+  padding-block: clamp(1.5rem, 6vh, 4rem) 0;
+  padding-inline: var(--folga-capa);
 }
 
 .capa__elenco {
@@ -126,16 +104,6 @@ const { members } = useCast()
 
   width: 100%;
   max-width: 1500px;
-
-  /*
-   * A compensação da escada.
-   *
-   * Cada personagem sobe um degrau, e o último sobe todos: a diagonal sai para
-   * fora do lugar que os itens ocupam, e sem devolver esse espaço aqui o grupo
-   * inteiro pareceria descentralizado. O respiro embaixo tem exatamente a altura
-   * total da escada, então o centro visual volta a bater com o centro da tela.
-   */
-  padding-bottom: calc(var(--passos, 0) * var(--passo-da-escada));
 }
 
 .capa__celula {
@@ -160,7 +128,7 @@ const { members } = useCast()
    * margem refaria o layout a cada quadro, e aqui isso significa quatro desenhos
    * de meio megapixel sendo remexidos.
    */
-  transform: translateY(calc(var(--posicao, 0) * -1 * var(--passo-da-escada)));
+  transform: translateY(calc(var(--posicao, 0) * -1 * var(--passo-escada)));
 }
 
 .capa__item {
@@ -187,7 +155,7 @@ const { members } = useCast()
  * folga lateral é exatamente o espaço livre nas pontas.
  */
 .capa__arte {
-  width: min(150%, calc(100% + 2 * var(--folga-lateral)));
+  width: min(150%, calc(100% + 2 * var(--folga-capa)));
 
   /*
    * O crescimento no hover acontece por `transform`, e não mudando a largura.
@@ -204,59 +172,6 @@ const { members } = useCast()
   transform: scale(1.06);
 }
 
-/**
- * O nome, embaixo do desenho.
- *
- * A cor é o gradiente da própria personagem, recortado nas letras — mesmo peso
- * visual das pílulas, sem precisar de caixa. O `drop-shadow` existe por
- * legibilidade: as letras ficam vazadas, e sobre o fundo colorido um nome sem
- * sombra perde o contorno.
- *
- * A cor da sombra é a tinta do site, e não um valor fixo: no tema claro ela sai
- * escura e separa as letras do fundo menta; no escuro ela sai clara e faz o
- * mesmo sobre o magenta. Uma regra só, e os dois casos ficam certos.
- */
-.capa__nome {
-  font-family: var(--font-cast);
-  font-size: clamp(1.25rem, 2.6vw, 2rem);
-  line-height: 1.15;
-  text-align: center;
-
-  background-image: linear-gradient(90deg, var(--nome-de), var(--nome-ate));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  /*
-   * A sombra é forte de propósito. O gradiente do Pamonha termina num verde claro
-   * e o do Mochi começa num rosa forte: sobre um fundo claro, a ponta mais clara
-   * de cada nome precisa de uma borda escura para não sumir. Como a cor da sombra
-   * é a tinta do site, no tema escuro ela vira clara e cumpre o mesmo papel sobre
-   * o magenta.
-   */
-  filter:
-    drop-shadow(0 1px 1px color-mix(in srgb, var(--ink) 85%, transparent))
-    drop-shadow(0 2px 6px color-mix(in srgb, var(--ink) 45%, transparent));
-}
-
-.capa__dica {
-  margin: 0;
-  font-size: 1.5rem;
-  color: var(--link);
-  animation: pulsa 2.4s ease-in-out infinite;
-}
-
-@keyframes pulsa {
-  0%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.6;
-  }
-  50% {
-    transform: translateY(6px);
-    opacity: 1;
-  }
-}
-
 /*
  * Em tela estreita, quatro desenhos lado a lado ficam pequenos demais para
  * clicar. Duas colunas resolvem, e o desenho volta ao tamanho da célula para não
@@ -266,7 +181,6 @@ const { members } = useCast()
   .capa__elenco {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.75rem;
-    padding-bottom: 0;
   }
 
   /*
