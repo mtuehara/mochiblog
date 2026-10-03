@@ -43,14 +43,40 @@ export interface CastMember {
   gradient: readonly [string, string]
 
   /**
-   * O desenho de cada tema.
+   * O desenho de cada tema, e onde a TINTA dele está dentro do arquivo.
    *
    * São dois arquivos, e não um só com filtro: a cor da linha muda entre o claro
    * e o escuro porque o fundo muda. Um filtro de matiz no desenho inteiro
    * deslocaria todas as cores juntas, e aí a personagem perderia a identidade
    * dela para caber no tema.
+   *
+   * `tinta` existe porque o arquivo não é o desenho: é o QUADRO em que ele foi
+   * desenhado, e cada personagem boia dentro do seu. O pé da Pamonha, por
+   * exemplo, está 23% acima da borda de baixo; o do Mochi, 6%. O nome, que fica
+   * colado nessa borda, parecia então muito mais longe de um do que do outro —
+   * e era isso, não o desenho, que estava errado.
    */
-  art: { readonly light: string; readonly dark: string }
+  art: {
+    readonly light: string
+    readonly dark: string
+
+    /**
+     * Frações do lado do quadro (largura e altura são iguais na tela).
+     *
+     * `recuoBase` é quanto o pé está acima da borda de baixo; `deslocamentoX` é
+     * quanto o CENTRO da tinta está fora do centro do quadro.
+     *
+     * Medidos desenhando cada PNG num canvas e procurando o primeiro e o último
+     * pixel com alfa — não são estimativa. Se um desenho for trocado, medida de
+     * novo. O quadro do roxo é mais estreito que o dos outros (347x500 contra
+     * 500x500), e é daí que vem o fator 0,694 no `deslocamentoX` dele: como a
+     * imagem entra pela altura, a largura do quadro fica com sobra de um lado.
+     */
+    readonly tinta: {
+      readonly recuoBase: number
+      readonly deslocamentoX: number
+    }
+  }
 }
 
 export const CAST: readonly CastMember[] = [
@@ -62,22 +88,38 @@ export const CAST: readonly CastMember[] = [
     // no site — o tipo de nome que faz a próxima pessoa perder meia hora.
     fullName: 'Zolana',
     gradient: ['#801bdb', '#cb94ff'],
-    art: { light: purpleLight, dark: purpleDark },
+    art: {
+      light: purpleLight,
+      dark: purpleDark,
+      tinta: { recuoBase: 0.152, deslocamentoX: -0.013 },
+    },
   },
   {
     label: 'Ruka',
     gradient: ['#56d5e2', '#0553b0'],
-    art: { light: rukaLight, dark: rukaDark },
+    art: {
+      light: rukaLight,
+      dark: rukaDark,
+      tinta: { recuoBase: 0.152, deslocamentoX: -0.002 },
+    },
   },
   {
     label: 'Pamonha',
     gradient: ['#0a9cac', '#7ad75a'],
-    art: { light: pamonhaLight, dark: pamonhaDark },
+    art: {
+      light: pamonhaLight,
+      dark: pamonhaDark,
+      tinta: { recuoBase: 0.228, deslocamentoX: -0.023 },
+    },
   },
   {
     label: 'Mochi',
     gradient: ['#ff52df', '#ff4e6f'],
-    art: { light: mochiLight, dark: mochiDark },
+    art: {
+      light: mochiLight,
+      dark: mochiDark,
+      tinta: { recuoBase: 0.06, deslocamentoX: -0.03 },
+    },
   },
 ]
 

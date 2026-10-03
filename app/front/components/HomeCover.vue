@@ -18,8 +18,8 @@
  * o leitor desce.
  *
  * Por isso a capa não é mais uma tela cheia: ela ocupa a altura da janela menos a
- * linha de nomes, e os desenhos ficam encostados embaixo, com o céu sobrando em
- * cima — que é para onde eles estão voando.
+ * linha de nomes, e os desenhos sobem em escada (`--passo-escada`), cada um com o
+ * nome logo abaixo dos pés — que é para onde eles estão voando.
  */
 const { siteName } = useRuntimeConfig().public
 const { members } = useCast()
@@ -85,13 +85,15 @@ const { members } = useCast()
    *
    * Antes eles encostavam no chão (`align-content: end`) e toda a sobra virava
    * céu vazio: medido numa janela de 1440x900, 276px em cima contra nada embaixo.
-   * A diagonal já sobe sozinha, então o grupo não precisa estar colado no rodapé
-   * para parecer que está voando.
+   *
+   * Hoje não sobra quase nada: a escada (`--passo-escada`) é calculada para o
+   * grupo ocupar a capa inteira, e o que resta é o respiro de cima e o vão entre
+   * os pés e os nomes, os dois em `padding-block`.
    */
   align-content: center;
   justify-items: center;
 
-  padding-block: clamp(1.5rem, 6vh, 4rem) 0;
+  padding-block: var(--respiro-capa) var(--vao-nomes);
   padding-inline: var(--folga-capa);
 }
 
@@ -113,7 +115,16 @@ const { members } = useCast()
    * forma: o vão não separava nada.
    */
   gap: 0;
-  align-items: center;
+
+  /*
+   * `end` nas LINHAS: cada célula encosta o desenho no fundo da sua própria
+   * caixa. É isso que transforma o degrau da escada em altura de verdade — a
+   * célula mais alta (a última, com o maior `padding-bottom`) define a altura da
+   * linha, e a caixa da capa passa a medir o grupo inteiro. Com `transform`,
+   * aquele degrau não existia para o layout e a capa ficava maior que o grupo:
+   * era exatamente esse resto que virava o vão entre os pés e os nomes.
+   */
+  align-items: end;
 
   width: 100%;
   max-width: var(--largura-elenco);
@@ -130,18 +141,23 @@ const { members } = useCast()
    */
   grid-template-columns: minmax(0, 1fr);
   display: grid;
-  place-items: center;
+  justify-items: center;
+  align-content: end;
 
   /**
-   * A diagonal, e a razão dela: as quatro personagens são voadoras, e uma fileira
+   * A escada, e a razão dela: as quatro personagens são voadoras, e uma fileira
    * reta não diz isso. Subindo da esquerda para a direita, na ordem do mockup, a
    * fileira vira uma trajetória.
    *
-   * É `transform` pelo mesmo motivo do crescimento no hover: mudar a posição com
-   * margem refaria o layout a cada quadro, e aqui isso significa quatro desenhos
-   * de meio megapixel sendo remexidos.
+   * É `padding` e não `transform`, de propósito: assim o degrau conta como altura
+   * da linha e a caixa da capa mede o grupo de verdade. Com `transform`, o degrau
+   * era invisível para o layout e a diferença entre a capa e o grupo virava vão.
+   *
+   * Cada personagem sobe `--passo-escada`, o mesmo tanto que o nome dela desce
+   * até a linha dos nomes. É esse número compartilhado que faz o nome cair sempre
+   * debaixo dos pés da sua personagem.
    */
-  transform: translateY(calc(var(--posicao, 0) * -1 * var(--passo-escada)));
+  padding-bottom: calc(var(--posicao, 0) * var(--passo-escada));
 }
 
 .capa__item {
@@ -201,7 +217,7 @@ const { members } = useCast()
    * linha ficaria mais alto que o primeiro sem motivo, e a escada vira bagunça.
    */
   .capa__celula {
-    transform: none;
+    padding-bottom: 0;
   }
 
   .capa__arte {

@@ -32,7 +32,7 @@ defineProps<{
       elas não teriam para onde se afastar e a linha quebraria em duas — foi o que
       aconteceu na primeira tentativa.
     -->
-    <CastPills />
+    <CastPills nas-colunas />
   </div>
 </template>
 

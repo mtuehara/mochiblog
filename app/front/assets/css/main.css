@@ -99,7 +99,65 @@
    * embaixo da sua personagem. As duas metades do movimento saem daqui.
    */
   --folga-capa: clamp(1rem, 6vw, 5rem);
-  --passo-escada: clamp(1.4rem, 2.6vw, 3rem);
+
+  /*
+   * Quanto sobra em cima e embaixo do grupo (desenhos + nomes).
+   *
+   * O respiro é o ar entre a faixa do topo e o desenho mais alto; o vão é a
+   * distância entre os PÉS da personagem e o nome dela. Os dois entram na conta
+   * da escada, senão a soma não fecha e o vão volta a crescer.
+   */
+  --respiro-capa: clamp(1rem, 4vh, 2.5rem);
+  --vao-nomes: clamp(0.5rem, 1.5vh, 1rem);
+
+  /*
+   * A largura útil do elenco: a largura da janela sem as folgas laterais, e sem
+   * passar do teto. É a mesma caixa que os desenhos e os nomes dividem em quatro
+   * colunas.
+   */
+  --largura-elenco-util: min(
+    calc(100vw - 2 * var(--folga-capa)),
+    var(--largura-elenco)
+  );
+
+  /*
+   * O LADO do quadro de um desenho na tela, sem medir nada em JavaScript.
+   *
+   * A coluna é um quarto da largura útil e o desenho ocupa 150% dela — mas nunca
+   * mais que a célula mais as duas folgas, que é o teto que impede a barra de
+   * rolagem horizontal. Como o desenho é quadrado, esse é o lado dele, e a mesma
+   * medida serve de régua para a escada e para a faixa transparente da arte.
+   */
+  --lado-arte: min(
+    calc(var(--largura-elenco-util) * 0.375),
+    calc(var(--largura-elenco-util) * 0.25 + 2 * var(--folga-capa))
+  );
+
+  /*
+   * A escada: quanto cada personagem sobe em relação à anterior.
+   *
+   * Não é um número escolhido a dedo — é o que SOBRA. A capa tem uma tela de
+   * altura menos as duas faixas; o que fica entre a altura de um desenho e o fim
+   * da capa é dividido pelas três subidas. Assim o grupo preenche a tela em
+   * qualquer janela, e o nome cai sempre logo abaixo dos pés da sua personagem em
+   * vez de sobrar um vão que crescia com a tela.
+   *
+   * Era um valor fixo antes (`clamp(1.4rem, 2.6vw, 3rem)`), e o vão medido era de
+   * 96px numa janela de 1440x900 e de 180px numa de 900x820.
+   *
+   * O teto de `20vh` é rede de segurança para janela muito alta e estreita, e o
+   * piso cobre a janela baixa, onde a conta dá negativo.
+   */
+  --passo-escada: clamp(
+    1.4rem,
+    calc(
+      (
+          100svh - var(--altura-topo) - var(--altura-linha-nomes) -
+            var(--respiro-capa) - var(--vao-nomes) - var(--lado-arte)
+        ) / 3
+    ),
+    20vh
+  );
 
   /*
    * O teto de largura do elenco, usado nos DOIS lugares.
