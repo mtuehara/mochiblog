@@ -81,11 +81,14 @@ const { members } = useCast()
   display: grid;
 
   /*
-   * Os desenhos encostam embaixo e o espaço que sobra fica em cima — que é para
-   * onde eles estão voando. Também é o que mantém cada nome junto da sua
-   * personagem: centrados, sobraria um vão entre os pés e os nomes.
+   * Os desenhos ficam CENTRADOS na altura que sobra.
+   *
+   * Antes eles encostavam no chão (`align-content: end`) e toda a sobra virava
+   * céu vazio: medido numa janela de 1440x900, 276px em cima contra nada embaixo.
+   * A diagonal já sobe sozinha, então o grupo não precisa estar colado no rodapé
+   * para parecer que está voando.
    */
-  align-content: end;
+  align-content: center;
   justify-items: center;
 
   padding-block: clamp(1.5rem, 6vh, 4rem) 0;
@@ -99,11 +102,21 @@ const { members } = useCast()
 
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(0.4rem, 1.5vw, 1.25rem);
+
+  /*
+   * Sem vão entre as colunas, e isso é exigência do alinhamento dos nomes.
+   *
+   * Lá embaixo, cada nome é preso ao centro da coluna por uma conta de quatro
+   * partes iguais. Com um vão no meio, a coluna deixa de ser exatamente um quarto
+   * da caixa e a conta passaria a depender dele — mais uma grandeza para sair de
+   * sincronia sem ninguém perceber. E o desenho transborda a célula de qualquer
+   * forma: o vão não separava nada.
+   */
+  gap: 0;
   align-items: center;
 
   width: 100%;
-  max-width: 1500px;
+  max-width: var(--largura-elenco);
 }
 
 .capa__celula {

@@ -102,6 +102,16 @@
   --passo-escada: clamp(1.4rem, 2.6vw, 3rem);
 
   /*
+   * O teto de largura do elenco, usado nos DOIS lugares.
+   *
+   * Na capa, é a largura máxima da fileira de desenhos; na linha de nomes, é a
+   * mesma caixa dividida em quatro colunas. Se os dois números divergirem, o nome
+   * sai de baixo da personagem em tela larga — por isso ele é um token, e não um
+   * valor repetido de memória em cada arquivo.
+   */
+  --largura-elenco: 1500px;
+
+  /*
    * A altura da faixa dos nomes, logo abaixo das personagens.
    *
    * Não é chute: é a altura REAL da barra de filtros, que é quem desenha os

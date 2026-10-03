@@ -68,9 +68,11 @@ withDefaults(
   align-items: center;
   justify-content: center;
 
+  /* A barra em volta dela está com `pointer-events: none`; aqui devolvemos. */
+  pointer-events: auto;
+
   padding: 0.5rem 1.6rem;
   border-radius: var(--radius-round);
-
   /*
    * `--mistura` vem de fora: quem calcula é a barra de filtros, a partir da
    * rolagem. 0 é "solto", 1 é "cheio".
@@ -89,6 +91,15 @@ withDefaults(
   background-image: linear-gradient(90deg, var(--pilula-de), var(--pilula-ate));
   background-clip: text;
   color: color-mix(in srgb, #ffffff calc(var(--forca) * 100%), transparent);
+
+  /*
+   * A folga lateral encolhe junto com o preenchimento.
+   *
+   * Solta, a pílula é só o nome: o `padding` de botão aqui só criaria um vão
+   * grande entre um nome e o outro, e é justamente esse vão que fazia a linha
+   * medir 575px independentemente da largura da janela.
+   */
+  padding-inline: calc(1.6rem * var(--mistura, 1));
 
   font-family: var(--font-cast);
 
@@ -114,13 +125,22 @@ withDefaults(
 }
 
 /*
- * O preenchimento. Sem `z-index`: o `::before` já é pintado depois do fundo do
- * elemento e antes do texto.
+ * O preenchimento.
+ *
+ * O `z-index: -1` NÃO é detalhe: sem ele o fundo é pintado DEPOIS do texto.
+ * Um filho posicionado sem `z-index` entra no fim da ordem de pintura, junto com
+ * o texto e depois dele — então, quando o fundo ficava opaco, ele cobria as
+ * letras e o botão virava um retângulo colorido sem nome nenhum.
+ *
+ * Com `-1` ele desce para logo acima do fundo do próprio elemento e abaixo do
+ * texto. Funciona porque o `filter` da pílula já cria um contexto de
+ * empilhamento: o `-1` é relativo a ela, e não à página.
  */
 .pilula::before {
   content: '';
   position: absolute;
   inset: 0;
+  z-index: -1;
 
   border-radius: inherit;
   background-image: linear-gradient(90deg, var(--pilula-de), var(--pilula-ate));

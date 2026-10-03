@@ -51,6 +51,16 @@ defineProps<{
   padding-inline: var(--folga-capa);
 
   /*
+   * A caixa da barra não pode capturar cliques.
+   *
+   * Ela é transparente mas ocupa a largura toda e uns 100px de altura, e gruda
+   * no topo: sem isto, ela ficaria por cima do começo da lista de posts e o
+   * clique em qualquer coisa ali dentro bateria na barra, não no post. Quem
+   * devolve a interação é a pílula, que é o único elemento clicável daqui.
+   */
+  pointer-events: none;
+
+  /*
    * A curva da transformação, calculada UMA vez.
    *
    * 0 é "solto", 1 é "cheio", e ela sai da proporção da capa que já subiu:
